@@ -1,7 +1,7 @@
 # newM
 
 ## *.int and *pn.int file
-.int 1~2 means p1/2 p3/2
+in *.int 1~2 means p1/2 p3/2
 pn.int 1~2 means proton, 3~4 means neutron.
 
 spe
