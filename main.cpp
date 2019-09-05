@@ -278,6 +278,7 @@ struct level {
   double e;
   double j;
   bool prty;
+  double *v;
 };
 //  计算单个核
 int shell(int A, int Z, int n_lam, struct level *level, int interaction) {
@@ -886,19 +887,35 @@ int main() {
   energylevel = (struct level *)malloc(
       sizeof(struct level) *
       dim_occup); //  这样如果出错就会跟 shell 里面同时报错
+
+  // 存本征值
+  for (int i = 0; i < dim_occup; i++) {
+    energylevel[i].v = (double *)malloc(sizeof(double) * dim_occup);
+  }
+
   int interaction = 0;
   system("mkdir result"); //  新建一个路径存结果
   double val;
   while (ext != 0) {
-    printf("input 1 for shell model, 2 for Λ binding energy, 3 for double-Λ "
-           "binding "
-           "energy, 4 for all p-shell Λ binding energies, 5 for all p-shell ΛΛ "
-           "binding energies, 6 for creating .plt file for energy level "
-           "plot, 0 exit\n");
+    printf("input 1 for shell model, 2 for Λ binding energy, "
+           "3 for double-Λ binding energy, "
+           "4 for all p-shell Λ binding energies, "
+           "5 for all p-shell ΛΛ binding energies, "
+           "6 for creating .plt file for energy level plot, "
+           "7 for BE2 between the first 5 states for a given shell, "
+           "0 exit\n");
     int numberoflevels;
     int choose;
     scanf("%d", &choose);
     switch (choose) {
+    case 7:
+      printf("input &A &Z &n_lam:\n");
+      scanf("%d %d %d", &A, &Z, &n_lam);
+      printf("input interaction type:(0 for gogny, 1 for fit)\n");
+      scanf("%d", &interaction);
+      shell(A, Z, n_lam, energylevel, interaction);
+
+      break;
     case 1:
       printf("input &A &Z &n_lam:\n");
       scanf("%d %d %d", &A, &Z, &n_lam);

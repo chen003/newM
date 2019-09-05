@@ -13,19 +13,19 @@ unsigned int nextbitpermut(
   return w;
 }
 
-int mfromPermut(int type, int w) {  //type 种类粒子的总 m 角动量
+int mfromPermut(int type, int w) { // type 种类粒子的总 m 角动量
   int n_nucleon = __builtin_popcount(w);
   int m = 0;
   int n;
   for (int i = 0; i < n_nucleon; i++) {
     n = __builtin_ctz(w) + 1;
-    m += mfromA( type,n);
+    m += mfromA(type, n);
     w = w & (~0 << n);
   }
   return m;
 }
 
-int lfromPermut(int type, int w) { //type 种类粒子的总轨道角动量
+int lfromPermut(int type, int w) { // type 种类粒子的总轨道角动量
   int n_nucleon = __builtin_popcount(w);
   int m = 0;
   int n;
@@ -35,6 +35,33 @@ int lfromPermut(int type, int w) { //type 种类粒子的总轨道角动量
     w = w & (~0 << n);
   }
   return m;
+}
+
+double efcharge(int type) {
+  if (type == typepp) {
+    return efchargeP;
+  } else if (type == typenn) {
+    return efchargeN;
+  } else {
+    fprintf(stderr, "Effective charge, nucleon type error!\n");
+    exit(1);
+  }
+}
+
+double be2singlefromPermut(int type,
+                           int w) { // type粒子对 BE2 的贡献. delta(j,3/2)
+  int n_nucleon = __builtin_popcount(w);
+  int sum = 0;
+  int n;
+  for (int i = 0; i < n_nucleon; i++) {
+    n = __builtin_ctz(w) + 1;
+    int j = jfromA(type, n);
+    int m = mfromA(type, n);
+    if (j == 3 / 2) {
+      sum += -efcharge(type) * ((m == 3 / 2 || m == -3 / 2) ? -1 : 1)
+    }
+  }
+  return sum;
 }
 
 double singlePermutE(int w, int type) { // 从 int 得到多粒子波函数的单粒子能,
@@ -79,7 +106,8 @@ int leastdifbit(int p, int q) { // 与 lead 一致, 换成数组要 -1
 }
 
 void setTBO2(int *m1, int *m3, int p1,
-             int p2) { //只用于非同种粒子 difcount == 2 的情形, 得到编号分配(属于左矢还是右矢)
+             int p2) { //只用于非同种粒子 difcount == 2 的情形,
+                       //得到编号分配(属于左矢还是右矢)
   if ((*m1 = leaddifbit(p1, p2)) < 0) {
     *m3 = -*m1;
     *m1 = abs(leastdifbit(p1, p2));
@@ -88,7 +116,8 @@ void setTBO2(int *m1, int *m3, int p1,
   }
 }
 
-int signTBO2(int m1, int m3, int p) { // 返回反对易关系得到的+-1, 方法是求 p 在 m1 和 m3 位之间有多少占据粒子
+int signTBO2(int m1, int m3, int p) { // 返回反对易关系得到的+-1, 方法是求 p 在
+                                      // m1 和 m3 位之间有多少占据粒子
   int sign = 1;
   p = p & (~0 << min(m1, m3));
   p = p & (~(~0 << (max(m1, m3) - 1))); // 屏蔽两端
@@ -98,7 +127,8 @@ int signTBO2(int m1, int m3, int p) { // 返回反对易关系得到的+-1, 方�
   return sign;
 }
 
-double addTBO1(int type, int m1, int m3, int w, int lr) { //当每一位都相同时, 对一种粒子的缩并情况求和.
+double addTBO1(int type, int m1, int m3, int w,
+               int lr) { //当每一位都相同时, 对一种粒子的缩并情况求和.
   double add = 0;
   int n_nucleon = __builtin_popcount(w);
   int n;
@@ -151,7 +181,8 @@ double TBOME(int type, int p1, int q1, int p2, int q2) {
   return me;
 }
 
-// Two-Body Operator, act on three kinds of particles. e.g. ΛΝ-ΣΝ. no one-boy operator dexchange sign
+// Two-Body Operator, act on three kinds of particles. e.g. ΛΝ-ΣΝ. no one-boy
+// operator dexchange sign
 double TBOME2(int type, int p1, int q1, int p2, int q2) {
   double me = 0;
   int m1, m2, m3, m4;
@@ -160,7 +191,7 @@ double TBOME2(int type, int p1, int q1, int p2, int q2) {
     int sign13 = signTBO2(m1, m3, p1);
     if (difcount(q1, q2) == 2) {
       setTBO2(&m2, &m4, q1, q2);
-//      int sign24 = signTBO2(m2, m4, q1);
+      //      int sign24 = signTBO2(m2, m4, q1);
       me += sign13 * TBME(type, m1, m2, m3, m4);
     } else if (difcount(q1, q2) == 0) {
       me += sign13 * addTBO1(type, m1, m3, q1, 1);
@@ -168,7 +199,7 @@ double TBOME2(int type, int p1, int q1, int p2, int q2) {
   } else if (difcount(p1, p2) == 0) { // 对每一个缩并求和
     if (difcount(q1, q2) == 2) {
       setTBO2(&m2, &m4, q1, q2);
-//      int sign24 = signTBO2(m2, m4, q1);
+      //      int sign24 = signTBO2(m2, m4, q1);
       me += addTBO1(type, m2, m4, p1, 2);
     } else if (difcount(q1, q2) == 0) {
       int n_nucleon = __builtin_popcount(p1);
@@ -211,19 +242,20 @@ double TBOMEnn(int type, int p, int q) {
       }
       s = s & (~0 << n);
     }
-    sign12 = signTBO2(m1, m2, p);  // 反对易关系产生的符号
+    sign12 = signTBO2(m1, m2, p); // 反对易关系产生的符号
     sign34 = signTBO2(m3, m4, q);
     me += sign12 * sign34 * TBME(type, m1, m2, m3, m4);
   } else if (difcount(p, q) == 2) {
-    s = (p ^ q);                           //不同位
-    int w = p & q;                         //相同位
-    int n_nucleon = __builtin_popcount(w); // 对缩并掉的粒子求和, 求和次数 == 可能的缩并数
+    s = (p ^ q);   //不同位
+    int w = p & q; //相同位
+    int n_nucleon =
+        __builtin_popcount(w); // 对缩并掉的粒子求和, 求和次数 == 可能的缩并数
     int n;
     int lead = leaddifbit(p, q);
     int least = leastdifbit(p, q);        // difcount == 2 时这两者异号.
     for (int i = 0; i < n_nucleon; i++) { // 从低位开始
       n = __builtin_ctz(w) + 1;
-      if (n < abs(least)) {  // 缩并的位置小于 least, 这里画个图就清楚了
+      if (n < abs(least)) { // 缩并的位置小于 least, 这里画个图就清楚了
         m1 = m3 = n;
         if (lead < 0) {
           m4 = -lead;
@@ -252,7 +284,7 @@ double TBOMEnn(int type, int p, int q) {
           m3 = -least;
         }
       }
-      sign = signTBO2(m1,m2,p) * signTBO2(m3,m4,q);
+      sign = signTBO2(m1, m2, p) * signTBO2(m3, m4, q);
       me += sign * TBME(type, m1, m2, m3, m4);
       w = w & (~0 << n);
     }
@@ -275,38 +307,35 @@ double TBOMEnn(int type, int p, int q) {
 }
 
 double vJplus(int type, int cfgJplus, int cfg, double eigen_v) {
-    int mpl = leastdifbit(cfgJplus,cfg); // 升之后, 下标变小
-    int m = -leaddifbit(cfgJplus,cfg);
-    if (mpl > 0 && (m - mpl) == 1 && (mfromA(type,m) + 1) <= jfromA(type,m)) {
-            return eigen_v * c_Jplus(type,m);
-          }
-    else
-        return 0;
+  int mpl = leastdifbit(cfgJplus, cfg); // 升之后, 下标变小
+  int m = -leaddifbit(cfgJplus, cfg);
+  if (mpl > 0 && (m - mpl) == 1 && (mfromA(type, m) + 1) <= jfromA(type, m)) {
+    return eigen_v * c_Jplus(type, m);
+  } else
+    return 0;
 }
 
 double vJminus(int type, int cfgJplus, int cfg, double eigen_vJplus) {
-    int mpl = leastdifbit(cfgJplus,cfg); // 升之后, 下标变小
-    int m = -leaddifbit(cfgJplus,cfg);
-            if (mpl > 0 && (m - mpl) == 1 && (mfromA(type,m) + 1) <= jfromA(type,m)) {
-                return c_Jminus(type,mpl) * eigen_vJplus;
-            }
-    else
-        return 0;
+  int mpl = leastdifbit(cfgJplus, cfg); // 升之后, 下标变小
+  int m = -leaddifbit(cfgJplus, cfg);
+  if (mpl > 0 && (m - mpl) == 1 && (mfromA(type, m) + 1) <= jfromA(type, m)) {
+    return c_Jminus(type, mpl) * eigen_vJplus;
+  } else
+    return 0;
 }
 
-void setJminus(int type, int norbt, int n_proton, double *eigen_v2i, double *eigen_vp,
-              int cfgi_p) {
-    int cfgmax = power(2, norbt) - power(2, norbt - n_proton);
-  for (int p = power(2, n_proton) - 1;
-       p <= cfgmax;
-       p = nextbitpermut(p)) {
+void setJminus(int type, int norbt, int n_proton, double *eigen_v2i,
+               double *eigen_vp, int cfgi_p) {
+  int cfgmax = power(2, norbt) - power(2, norbt - n_proton);
+  for (int p = power(2, n_proton) - 1; p <= cfgmax; p = nextbitpermut(p)) {
     int mpl, m; // 降之前是 mpl(指标小的, 属于 p), 降之后是 m
     if (difcount(p, cfgi_p) == 2) {
-        mpl = leastdifbit(p, cfgi_p);
-        m = -leaddifbit(p, cfgi_p);
-        if (mpl > 0 && (m - mpl) == 1 && (mfromA(type,m) + 1) <= jfromA(type,m)) {
-            *eigen_v2i += c_Jminus(type,mpl) * eigen_vp[p];
-        }
+      mpl = leastdifbit(p, cfgi_p);
+      m = -leaddifbit(p, cfgi_p);
+      if (mpl > 0 && (m - mpl) == 1 &&
+          (mfromA(type, m) + 1) <= jfromA(type, m)) {
+        *eigen_v2i += c_Jminus(type, mpl) * eigen_vp[p];
+      }
     }
   }
 }

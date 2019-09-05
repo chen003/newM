@@ -21,8 +21,9 @@
 #define typepp 1
 #define typenn 2
 #define typell 3
-#define typeSig1p 7 // 实际调用时方便起见, 让核子在超子前面. 比如Σ+p 或 Σ-n
-                    //, 实际上是 p 和 n 在 Σ前面
+#define typeSig1p                                                              \
+  7 // 实际调用时方便起见, 让核子在超子前面. 比如Σ+p 或 Σ-n
+    //, 实际上是 p 和 n 在 Σ前面
 #define typeSig1n 8       // Σ+n 或 Σ-p
 #define typeSig2p 9       // Σ0p 或 Σ0n
 #define typeSig2pSig1n 10 // Σ0p-Σ+n 或 Σ-p-Σ0n
@@ -41,6 +42,9 @@
 #define numlinesH 5                // 超核的相互作用文件行数
 #define PATHsp "../newM/sp/p.sp"   // sp 壳文件
 #define PATHspH "../newM/sp/sH.sp" // Λ 的 s 壳文件
+
+#define efchargeP 1 // BE2 有效电荷
+#define efchargeN 0
 
 #endif /* sp__shell_h */
 
@@ -71,6 +75,10 @@ int jfromA(int type, int A);       //两倍
 int JschemeJ(int type, int a);     // 得到 Jscheme 角动量
 int typeAfromAB(int type, int lr); // lr 1 是左 2 是右
 int numfromA(int A, int type);
+
+// BE2
+double efcharge(int type);                   // effective charge from type
+double be2singlefromPermut(int type, int w); // p 壳的 BE2 只有对角元
 
 int power(int a, int b); //整数次幂
 
