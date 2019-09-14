@@ -3,10 +3,9 @@
 int **getdatac(FILE *fp) {
   fseek(fp, 0, SEEK_SET);
   int **p, j;
-  p = (int **)malloc(num_lines *
-                      sizeof(int *)); //存TBME 的 type
-                                       //和四个单粒子态. 1~3是质子的
-                                       // s1/2, p3/2, p1/2, 4~6是中子
+  p = (int **)malloc(num_lines * sizeof(int *)); //存TBME 的 type
+                                                 //和四个单粒子态. 1~3是质子的
+                                                 // s1/2, p3/2, p1/2, 4~6是中子
   moveToNextLine(fp);
   moveToNextLine(fp); //跳过开头两行没用的.
   for (int i = 0; i < num_lines; i++) {
@@ -70,3 +69,94 @@ double *Hgetdatad(FILE *fp) {
   return p;
 }
 
+double hw(int A, int Z) {
+  switch (Z) {
+  case 2: {
+    switch (A) {
+    case 6:
+      return 14.2;
+    case 7:
+      return 14.7;
+    case 8:
+      return 14.3;
+    default:
+      break;
+    }
+  }
+  case 3: {
+    switch (A) {
+    case 6:
+      return 14.9;
+    case 7:
+      return 15.1;
+    case 8:
+      return 15.2;
+    case 9:
+      return 13.0;
+    default:
+      break;
+    }
+  }
+  case 4: {
+    switch (A) {
+    case 8:
+      return 17.0;
+    case 9:
+      return 13.8;
+    case 10:
+      return 16.6;
+    default:
+      break;
+    }
+  }
+  case 5: {
+    switch (A) {
+    case 9:
+      return 14.8;
+    case 10:
+      return 16.6;
+    case 11:
+      return 14.9;
+    case 12:
+      return 14.4;
+    case 13:
+      return 12.6;
+    default:
+      break;
+    }
+  }
+  case 6: {
+    switch (A) {
+    case 11:
+      return 15.1;
+    case 12:
+      return 14.4;
+    case 13:
+      return 14.1;
+    case 14:
+      return 14.0;
+    default:
+      break;
+    }
+  }
+  case 7: {
+    switch (A) {
+    case 14:
+      return 14.1;
+    case 15:
+      return 13.1;
+    default:
+      break;
+    }
+  }
+  case 8: {
+    switch (A) {
+    case 15:
+      return 13.7;
+    default:
+      break;
+    }
+  }
+  }
+  exit(0);
+}

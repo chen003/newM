@@ -1,9 +1,11 @@
 #include "sp_shell.h"
 #include <gsl/gsl_eigen.h>
+#include <gsl/gsl_sf_coupling.h>
 // #include <gsl/gsl_matrix.h>
 #include "eigen_calc.h"
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define dim_occup 500
 
@@ -52,7 +54,6 @@ int fromdoubletoint(double d) {
   return -1;
 }
 // ********************************************************************************1
-
 void CreateConfig(struct config *cfg, struct config *cfgJplus, int n_proton,
                   int n_neutron, int n_lam, int *dim, int *dimJplus, int M2) {
   int n1 = 0, n2 = 0;
@@ -271,6 +272,46 @@ void CreateJsqr(double *eigen_v, double *eigen_v2, struct config *cfgJplus,
     }
   }
   free(eigen_vJplus);
+}
+
+void makeBasis(int A, int Z, int n_lam, int *dim, struct config *cfg) {
+  int n_proton;
+  int n_neutron;
+  n_proton = Z - 2;
+  n_neutron = A - Z - 2 - n_lam;
+
+  int l_or_h = 1;
+  if (A <= 10) {
+    l_or_h = 0;
+  }
+  // makeTBME(fp, fpH, l_or_h); //  这一步后才能使用 mfromA 函数
+
+  int M2 =
+      ((n_proton + n_neutron + n_lam) % 2 == 0 ? 0 : -1); //  最低角动量 z 分量
+
+  int n1 = 0;
+  int cfgmaxp = power(2, n_orbtM) - power(2, n_orbtM - n_proton);
+  int cfgmaxn = power(2, n_orbtM) - power(2, n_orbtM - n_neutron);
+  int cfgmaxl =
+      power(2, n_orbtMH) - power(2, n_orbtMH - n_lam); // 三种粒子的最大位数
+  for (int p_cfg = power(2, n_proton) - 1; p_cfg <= cfgmaxp;
+       p_cfg = nextbitpermut(p_cfg)) {
+    for (int n_cfg = power(2, n_neutron) - 1; n_cfg <= cfgmaxn;
+         n_cfg = nextbitpermut(n_cfg)) {
+      for (int l_cfg = power(2, n_lam) - 1; l_cfg <= cfgmaxl;
+           l_cfg = nextbitpermut(l_cfg)) { //  用算法按字典序得到下一组态
+        if (mfromPermut(typepp, p_cfg) + mfromPermut(typenn, n_cfg) +
+                mfromPermut(typell, l_cfg) ==
+            M2) {
+          cfg[n1].p = p_cfg;
+          cfg[n1].n = n_cfg;
+          cfg[n1].lam = l_cfg;
+          n1++;
+        }
+      }
+    }
+  }
+  *dim = n1;
 }
 
 //  操作的能级类型
@@ -534,6 +575,10 @@ int shell(int A, int Z, int n_lam, struct level *level, int interaction) {
     level[k].e = creal(eigen_values[k]);
     level[k].j = -1 + sqrt(1 + 4 * J_sqr);
     level[k].prty = prty;
+
+    for (int i = 0; i < dim; i++) {
+      level[k].v[i] = eigen_v[i];
+    }
 
     /*
     // ****************fpmat
@@ -879,8 +924,10 @@ bool shellBlam2(int A, int Z, int n_lam, double *val, struct level *energylevel,
 }
 
 int main() {
-  int n_lam;
-  int A, Z;
+  int n_lam = 1;
+  int A = 7;
+  int Z = 3;
+
   int ext = 1;
   struct level *energylevel;
   struct level *energylevel2;
@@ -888,10 +935,13 @@ int main() {
       sizeof(struct level) *
       dim_occup); //  这样如果出错就会跟 shell 里面同时报错
 
-  // 存本征值
+  // 存本征值, 设向量维数不超过 dim_occup
   for (int i = 0; i < dim_occup; i++) {
     energylevel[i].v = (double *)malloc(sizeof(double) * dim_occup);
   }
+  struct config *cfgl;
+  cfgl = (struct config *)malloc(sizeof(struct config) * dim_occup);
+  int dim_cfgl = 0;
 
   int interaction = 0;
   system("mkdir result"); //  新建一个路径存结果
@@ -905,25 +955,107 @@ int main() {
            "7 for BE2 between the first 5 states for a given shell, "
            "0 exit\n");
     int numberoflevels;
-    int choose;
+    int choose = 7;
     scanf("%d", &choose);
     switch (choose) {
-    case 7:
+    case 7: {
       printf("input &A &Z &n_lam:\n");
       scanf("%d %d %d", &A, &Z, &n_lam);
       printf("input interaction type:(0 for gogny, 1 for fit)\n");
       scanf("%d", &interaction);
+
       shell(A, Z, n_lam, energylevel, interaction);
+      makeBasis(A, Z, n_lam, &dim_cfgl, cfgl);
+
+      //      for (int i = 0; i < dim_cfgl; i++) {
+      //        printf("%d %d\n", cfgl[i].p, cfgl[i].n);
+      //      }
+
+      int n_ini, n_fin;
+      int next = 0;
+      while (next == 0) {
+
+        do {
+          printf("input initial and final state, &n_ini &n_fin:\n");
+          scanf("%d %d", &n_ini, &n_fin);
+        } while (!(n_fin < n_ini && n_fin >= 0));
+
+        double be2mat[dim_cfgl][dim_cfgl];
+        for (int i = 0; i < dim_cfgl; i++) {
+          for (int j = i; j < dim_cfgl; j++) {
+            if (j == i) {
+              be2mat[i][i] = be2diagfromPermut(typenn, cfgl[i].n) +
+                             be2diagfromPermut(typepp, cfgl[i].p);
+            } else if (difcount(cfgl[i].n, cfgl[j].n) +
+                               difcount(cfgl[i].p, cfgl[j].p) ==
+                           2 &&
+                       difcount(cfgl[i].lam, cfgl[j].lam) == 0) {
+              if (difcount(cfgl[i].n, cfgl[j].n) == 2) {
+                be2mat[i][j] = be2mat[j][i] =
+                    be2nondiagfromPermut(typenn, cfgl[i].n, cfgl[j].n);
+              } else if (difcount(cfgl[i].p, cfgl[j].p) == 2) {
+                be2mat[i][j] = be2mat[j][i] =
+                    be2nondiagfromPermut(typepp, cfgl[i].p, cfgl[j].p);
+              }
+            } else {
+              be2mat[i][j] = be2mat[j][i] = 0;
+            }
+          }
+        }
+        for (int i = 0; i < dim_cfgl; i++) {
+          for (int j = 0; j < dim_cfgl; j++) {
+            printf("%.1f\t", be2mat[i][j]);
+          }
+          printf("\n");
+        }
+
+        for (int i = 0; i < dim_cfgl; i++) {
+          printf("p ");
+          bin(cfgl[i].p);
+          printf(" n ");
+          bin(cfgl[i].n);
+          printf(" lam ");
+          bin(cfgl[i].lam);
+          printf("\n");
+        }
+
+        printf("%f\n", be2nondiagfromPermut(typenn, cfgl[0].n, cfgl[1].n));
+        printf("%d %d\n", difcount(cfgl[0].n, cfgl[1].n),
+               difcount(cfgl[0].p, cfgl[1].p));
+        double be2 = 0;
+        for (int i = 0; i < dim_cfgl; i++) {
+          for (int j = 0; j < dim_cfgl; j++) {
+            be2 += energylevel[n_ini].v[i] * be2mat[i][j] *
+                   energylevel[n_fin].v[j];
+          }
+        }
+
+        int M2 = 0;
+        if (A % 2 == 1) {
+          M2 = -1;
+        }
+        be2 = be2 * 41.4 / hw(A, Z) /
+              gsl_sf_coupling_3j((int)round(energylevel[n_ini].j), 4,
+                                 (int)round(energylevel[n_fin].j), M2, 0, -M2);
+        be2 = 16 * 3.14159 / 5.0 * be2 * be2 / (energylevel[n_ini].j + 1) /
+              (energylevel[n_fin].j + 1); // 平方
+        printf("BE2 from %d to %d equals:\n%f\n", n_ini, n_fin, be2);
+
+        printf("Continue 0 or not 1:\n");
+        scanf("%d", &next);
+      }
 
       break;
-    case 1:
+    }
+    case 1: {
       printf("input &A &Z &n_lam:\n");
       scanf("%d %d %d", &A, &Z, &n_lam);
       printf("input interaction type:(0 for gogny, 1 for fit)\n");
       scanf("%d", &interaction);
       shell(A, Z, n_lam, energylevel, interaction);
       break;
-    case 2:
+    }
+    case 2: {
       do {
         printf("input &A &Z &n_lam:\n");
         scanf("%d %d %d", &A, &Z, &n_lam);
@@ -931,7 +1063,8 @@ int main() {
         scanf("%d", &interaction);
       } while (!shellBlam1(A, Z, n_lam, &val, energylevel, interaction));
       break;
-    case 3:
+    }
+    case 3: {
       do {
         printf("input &A &Z &n_lam:\n");
         scanf("%d %d %d", &A, &Z, &n_lam);
@@ -939,6 +1072,7 @@ int main() {
         scanf("%d", &interaction);
       } while (!shellBlam2(A, Z, n_lam, &val, energylevel, interaction));
       break;
+    }
     case 4: {
       FILE *fpB1;
       if (!(fpB1 = fopen("result/BΛ.txt", "w+"))) {
@@ -1025,8 +1159,12 @@ int main() {
       break;
     }
   }
-
+  for (int i = 0; i < dim_occup; i++) {
+    free(energylevel[i].v);
+  }
   free(energylevel);
+
+  free(cfgl);
   return 0;
 }
 

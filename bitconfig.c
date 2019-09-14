@@ -13,6 +13,15 @@ unsigned int nextbitpermut(
   return w;
 }
 
+void bin(unsigned n) {
+  /* step 1 */
+  if (n > 1)
+    bin(n / 2);
+
+  /* step 2 */
+  printf("%d", n % 2);
+}
+
 int mfromPermut(int type, int w) { // type 种类粒子的总 m 角动量
   int n_nucleon = __builtin_popcount(w);
   int m = 0;
@@ -46,22 +55,6 @@ double efcharge(int type) {
     fprintf(stderr, "Effective charge, nucleon type error!\n");
     exit(1);
   }
-}
-
-double be2singlefromPermut(int type,
-                           int w) { // type粒子对 BE2 的贡献. delta(j,3/2)
-  int n_nucleon = __builtin_popcount(w);
-  int sum = 0;
-  int n;
-  for (int i = 0; i < n_nucleon; i++) {
-    n = __builtin_ctz(w) + 1;
-    int j = jfromA(type, n);
-    int m = mfromA(type, n);
-    if (j == 3 / 2) {
-      sum += -efcharge(type) * ((m == 3 / 2 || m == -3 / 2) ? -1 : 1)
-    }
-  }
-  return sum;
 }
 
 double singlePermutE(int w, int type) { // 从 int 得到多粒子波函数的单粒子能,
@@ -306,6 +299,66 @@ double TBOMEnn(int type, int p, int q) {
   return me;
 }
 
+double be2diagfromPermut(int type,
+                         int w) { // type粒子对 BE2 的贡献. delta(j,3/2)
+  int n_nucleon = __builtin_popcount(w);
+  double sum = 0;
+  int n;
+  // 比较, 留下只有一个不同的, 保留jm
+  for (int i = 0; i < n_nucleon; i++) {
+    n = __builtin_ctz(w) + 1;
+    int j = jfromA(type, n);
+    // int m = mfromA(type, n);
+    if (j == 3) {
+      sum += -efcharge(type) * 0.4;
+    } else if (j == 1) {
+      sum += -efcharge(type) * 8.0 / 15.0;
+    }
+    w = w & (~0 << n);
+  }
+  return sum * 2.5;
+}
+
+double be2nondiagfromPermut(int type, int w,
+                            int v) { // type粒子对 BE2 的贡献. delta(j,3/2)
+  if (difcount(w, v) != 2) {
+    return 0;
+  }
+  int s = w ^ v;
+  int n1 = __builtin_ctz(s) + 1;
+  int n2 = msbit(s);
+  int j1 = jfromA(type, n1);
+  int m1 = mfromA(type, n1);
+  int j2 = jfromA(type, n2);
+  int m2 = mfromA(type, n2);
+
+  int c = w & v;
+  int sign = 0;
+  int current;
+
+  // count how many bits between n1 and n2
+  for (int i = 0; i < __builtin_popcount(c); i++) {
+    current = __builtin_ctz(c) + 1;
+    if (current < n1) {
+      c = c & (~0 << current);
+      continue;
+    } else if (current > n2) {
+      break;
+    } else {
+      sign += 1;
+      c = c & (~0 << current);
+    }
+  }
+
+  if (j1 == j2 || m1 != m2) {
+    return 0;
+  } else {
+    return efcharge(type) * sqrt(2) / 3.0 * ((m1 == -1) ? -1.0 : 1.0) *
+           (1 - 2 * sign % 2);
+  }
+}
+
+// 角动量
 double vJplus(int type, int cfgJplus, int cfg, double eigen_v) {
   int mpl = leastdifbit(cfgJplus, cfg); // 升之后, 下标变小
   int m = -leaddifbit(cfgJplus, cfg);
