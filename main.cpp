@@ -996,12 +996,8 @@ int main() {
                          difcount(cfgl[i].n, cfgl[j].n) == 0) {
                 be2mat[i][j] = be2mat[j][i] =
                     be2nondiagfromPermut(typepp, cfgl[i].p, cfgl[j].p);
-              } else if (difcount(cfgl[i].p, cfgl[j].p) == 2 &&
-                         difcount(cfgl[i].n, cfgl[j].n) == 2) {
-                be2mat[i][j] = be2mat[j][i] =
-                    be2nondiagfromPermut(typepp, cfgl[i].p, cfgl[j].p) +
-                    be2nondiagfromPermut(typenn, cfgl[i].n, cfgl[j].n);
-              } else {
+              } // should only have in total (p & n) one difference.
+              else {
                 be2mat[i][j] = be2mat[j][i] = 0;
               }
             } else {
@@ -1009,22 +1005,22 @@ int main() {
             }
           }
         }
-        //        for (int i = 0; i < dim_cfgl; i++) {
-        //          for (int j = 0; j < dim_cfgl; j++) {
-        //            printf("%.1f\t", be2mat[i][j]);
-        //          }
-        //          printf("\n");
-        //        }
+        for (int i = 0; i < dim_cfgl; i++) {
+          for (int j = 0; j < dim_cfgl; j++) {
+            printf("%.2f\t", be2mat[i][j]);
+          }
+          printf("\n");
+        }
 
-        //        for (int i = 0; i < dim_cfgl; i++) {
-        //          printf("p ");
-        //          bin(cfgl[i].p);
-        //          printf(" n ");
-        //          bin(cfgl[i].n);
-        //          printf(" lam ");
-        //          bin(cfgl[i].lam);
-        //          printf("\n");
-        //        }
+        for (int i = 0; i < dim_cfgl; i++) {
+          printf("p ");
+          bin(cfgl[i].p);
+          printf(" n ");
+          bin(cfgl[i].n);
+          printf(" lam ");
+          bin(cfgl[i].lam);
+          printf("\n");
+        }
 
         double be2 = 0;
         for (int i = 0; i < dim_cfgl; i++) {

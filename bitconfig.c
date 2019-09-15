@@ -354,7 +354,7 @@ double be2nondiagfromPermut(int type, int w,
     return 0;
   } else {
     return efcharge(type) / (sqrt(10 * 3.14159)) * ((m1 == 1) ? -1.0 : 1.0) *
-           (1 - 2 * sign % 2) * 2.5;
+           (1 - 2 * (sign % 2)) * 2.5;
   }
 }
 

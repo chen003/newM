@@ -160,5 +160,6 @@ double hw(int A, int Z) {
     }
   }
   }
+  printf("hw for A Z doesn't exist!\n");
   exit(0);
 }
