@@ -308,15 +308,15 @@ double be2diagfromPermut(int type,
   for (int i = 0; i < n_nucleon; i++) {
     n = __builtin_ctz(w) + 1;
     int j = jfromA(type, n);
-    // int m = mfromA(type, n);
+    int m = mfromA(type, n);
     if (j == 3) {
-      sum += -efcharge(type) * 0.4;
-    } else if (j == 1) {
-      sum += -efcharge(type) * 8.0 / 15.0;
+      sum += ((abs(m) == 3) ? 1. : -1.) * ((m > 0) ? 1.0 : -1.0);
+    } else {
+      sum += 0;
     }
     w = w & (~0 << n);
   }
-  return sum * 2.5;
+  return sum * efcharge(type) / (2 * sqrt(5 * 3.14159)) * 2.5;
 }
 
 double be2nondiagfromPermut(int type, int w,
@@ -353,8 +353,8 @@ double be2nondiagfromPermut(int type, int w,
   if (j1 == j2 || m1 != m2) {
     return 0;
   } else {
-    return efcharge(type) * sqrt(2) / 3.0 * ((m1 == -1) ? -1.0 : 1.0) *
-           (1 - 2 * sign % 2);
+    return efcharge(type) / (sqrt(10 * 3.14159)) * ((m1 == 1) ? -1.0 : 1.0) *
+           (1 - 2 * sign % 2) * 2.5;
   }
 }
 

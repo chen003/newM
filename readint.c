@@ -99,6 +99,8 @@ double hw(int A, int Z) {
   }
   case 4: {
     switch (A) {
+    case 7:
+      return 16.69; // imprical forumla
     case 8:
       return 17.0;
     case 9:

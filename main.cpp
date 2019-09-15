@@ -986,42 +986,46 @@ int main() {
             if (j == i) {
               be2mat[i][i] = be2diagfromPermut(typenn, cfgl[i].n) +
                              be2diagfromPermut(typepp, cfgl[i].p);
-            } else if (difcount(cfgl[i].n, cfgl[j].n) +
-                               difcount(cfgl[i].p, cfgl[j].p) ==
-                           2 &&
-                       difcount(cfgl[i].lam, cfgl[j].lam) == 0) {
-              if (difcount(cfgl[i].n, cfgl[j].n) == 2) {
+            } else if (difcount(cfgl[i].lam, cfgl[j].lam) == 0) {
+
+              if (difcount(cfgl[i].p, cfgl[j].p) == 0 &&
+                  difcount(cfgl[i].n, cfgl[j].n) == 2) {
                 be2mat[i][j] = be2mat[j][i] =
                     be2nondiagfromPermut(typenn, cfgl[i].n, cfgl[j].n);
-              } else if (difcount(cfgl[i].p, cfgl[j].p) == 2) {
+              } else if (difcount(cfgl[i].p, cfgl[j].p) == 2 &&
+                         difcount(cfgl[i].n, cfgl[j].n) == 0) {
                 be2mat[i][j] = be2mat[j][i] =
                     be2nondiagfromPermut(typepp, cfgl[i].p, cfgl[j].p);
+              } else if (difcount(cfgl[i].p, cfgl[j].p) == 2 &&
+                         difcount(cfgl[i].n, cfgl[j].n) == 2) {
+                be2mat[i][j] = be2mat[j][i] =
+                    be2nondiagfromPermut(typepp, cfgl[i].p, cfgl[j].p) +
+                    be2nondiagfromPermut(typenn, cfgl[i].n, cfgl[j].n);
+              } else {
+                be2mat[i][j] = be2mat[j][i] = 0;
               }
             } else {
               be2mat[i][j] = be2mat[j][i] = 0;
             }
           }
         }
-        for (int i = 0; i < dim_cfgl; i++) {
-          for (int j = 0; j < dim_cfgl; j++) {
-            printf("%.1f\t", be2mat[i][j]);
-          }
-          printf("\n");
-        }
+        //        for (int i = 0; i < dim_cfgl; i++) {
+        //          for (int j = 0; j < dim_cfgl; j++) {
+        //            printf("%.1f\t", be2mat[i][j]);
+        //          }
+        //          printf("\n");
+        //        }
 
-        for (int i = 0; i < dim_cfgl; i++) {
-          printf("p ");
-          bin(cfgl[i].p);
-          printf(" n ");
-          bin(cfgl[i].n);
-          printf(" lam ");
-          bin(cfgl[i].lam);
-          printf("\n");
-        }
+        //        for (int i = 0; i < dim_cfgl; i++) {
+        //          printf("p ");
+        //          bin(cfgl[i].p);
+        //          printf(" n ");
+        //          bin(cfgl[i].n);
+        //          printf(" lam ");
+        //          bin(cfgl[i].lam);
+        //          printf("\n");
+        //        }
 
-        printf("%f\n", be2nondiagfromPermut(typenn, cfgl[0].n, cfgl[1].n));
-        printf("%d %d\n", difcount(cfgl[0].n, cfgl[1].n),
-               difcount(cfgl[0].p, cfgl[1].p));
         double be2 = 0;
         for (int i = 0; i < dim_cfgl; i++) {
           for (int j = 0; j < dim_cfgl; j++) {
@@ -1030,15 +1034,20 @@ int main() {
           }
         }
 
+        //        for (int i = 0; i < dim_cfgl; i++) {
+        //          printf("%f %f\n", energylevel[n_ini].v[i],
+        //          energylevel[n_fin].v[i]);
+        //        }
+
         int M2 = 0;
         if (A % 2 == 1) {
           M2 = -1;
         }
+
         be2 = be2 * 41.4 / hw(A, Z) /
               gsl_sf_coupling_3j((int)round(energylevel[n_ini].j), 4,
                                  (int)round(energylevel[n_fin].j), M2, 0, -M2);
-        be2 = 16 * 3.14159 / 5.0 * be2 * be2 / (energylevel[n_ini].j + 1) /
-              (energylevel[n_fin].j + 1); // 平方
+        be2 = be2 * be2 / (energylevel[n_ini].j + 1); // 平方
         printf("BE2 from %d to %d equals:\n%f\n", n_ini, n_fin, be2);
 
         printf("Continue 0 or not 1:\n");
