@@ -43,8 +43,8 @@
 #define PATHsp "../newM/sp/p.sp"   // sp 壳文件
 #define PATHspH "../newM/sp/sH.sp" // Λ 的 s 壳文件
 
-#define efchargeP 1.3 // BE2 有效电荷
-#define efchargeN 0.5
+#define efchargeP 1. // BE2 有效电荷
+#define efchargeN 0.
 
 #endif /* sp__shell_h */
 

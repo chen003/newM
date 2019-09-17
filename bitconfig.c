@@ -310,7 +310,7 @@ double be2diagfromPermut(int type,
     int j = jfromA(type, n);
     int m = mfromA(type, n);
     if (j == 3) {
-      sum += ((abs(m) == 3) ? 1. : -1.) * ((m > 0) ? 1.0 : -1.0);
+      sum += ((abs(m) == 3) ? -1. : 1.);
     } else {
       sum += 0;
     }
@@ -337,7 +337,10 @@ double be2nondiagfromPermut(int type, int w,
   int current;
 
   // count how many bits between n1 and n2
-  for (int i = 0; i < __builtin_popcount(c); i++) {
+  int iterate = __builtin_popcount(c);
+  for (int i = 0; i < iterate;
+       i++) { // 神坑, 原来 for loop 每循环一次都重新算一遍循环条件, 不能讲
+              // iterate 替换成 __builtin_popcount(c) 因为被改了.
     current = __builtin_ctz(c) + 1;
     if (current < n1) {
       c = c & (~0 << current);

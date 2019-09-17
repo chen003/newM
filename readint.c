@@ -70,96 +70,94 @@ double *Hgetdatad(FILE *fp) {
 }
 
 double hw(int A, int Z) {
-  switch (Z) {
-  case 2: {
-    switch (A) {
-    case 6:
-      return 14.2;
-    case 7:
-      return 14.7;
-    case 8:
-      return 14.3;
-    default:
-      break;
-    }
-  }
-  case 3: {
-    switch (A) {
-    case 6:
-      return 14.9;
-    case 7:
-      return 15.1;
-    case 8:
-      return 15.2;
-    case 9:
-      return 13.0;
-    default:
-      break;
-    }
-  }
-  case 4: {
-    switch (A) {
-    case 7:
-      return 16.69; // imprical forumla
-    case 8:
-      return 17.0;
-    case 9:
-      return 13.8;
-    case 10:
-      return 16.6;
-    default:
-      break;
-    }
-  }
-  case 5: {
-    switch (A) {
-    case 9:
-      return 14.8;
-    case 10:
-      return 16.6;
-    case 11:
-      return 14.9;
-    case 12:
-      return 14.4;
-    case 13:
-      return 12.6;
-    default:
-      break;
-    }
-  }
-  case 6: {
-    switch (A) {
-    case 11:
-      return 15.1;
-    case 12:
-      return 14.4;
-    case 13:
-      return 14.1;
-    case 14:
-      return 14.0;
-    default:
-      break;
-    }
-  }
-  case 7: {
-    switch (A) {
-    case 14:
-      return 14.1;
-    case 15:
-      return 13.1;
-    default:
-      break;
-    }
-  }
-  case 8: {
-    switch (A) {
-    case 15:
-      return 13.7;
-    default:
-      break;
-    }
-  }
-  }
-  printf("hw for A Z doesn't exist!\n");
-  exit(0);
+  //  switch (Z) {
+  //  case 2: {
+  //    switch (A) {
+  //    case 6:
+  //      return 14.2;
+  //    case 7:
+  //      return 14.7;
+  //    case 8:
+  //      return 14.3;
+  //    default:
+  //      break;
+  //    }
+  //  }
+  //  case 3: {
+  //    switch (A) {
+  //    case 6:
+  //      return 14.9;
+  //    case 7:
+  //      return 15.1;
+  //    case 8:
+  //      return 15.2;
+  //    case 9:
+  //      return 13.0;
+  //    default:
+  //      break;
+  //    }
+  //  }
+  //  case 4: {
+  //    switch (A) {
+  //    case 8:
+  //      return 17.0;
+  //    case 9:
+  //      return 13.8;
+  //    case 10:
+  //      return 16.6;
+  //    default:
+  //      break;
+  //    }
+  //  }
+  //  case 5: {
+  //    switch (A) {
+  //    case 9:
+  //      return 14.8;
+  //    case 10:
+  //      return 16.6;
+  //    case 11:
+  //      return 14.9;
+  //    case 12:
+  //      return 14.4;
+  //    case 13:
+  //      return 12.6;
+  //    default:
+  //      break;
+  //    }
+  //  }
+  //  case 6: {
+  //    switch (A) {
+  //    case 11:
+  //      return 15.1;
+  //    case 12:
+  //      return 14.4;
+  //    case 13:
+  //      return 14.1;
+  //    case 14:
+  //      return 14.0;
+  //    default:
+  //      break;
+  //    }
+  //  }
+  //  case 7: {
+  //    switch (A) {
+  //    case 14:
+  //      return 14.1;
+  //    case 15:
+  //      return 13.1;
+  //    default:
+  //      break;
+  //    }
+  //  }
+  //  case 8: {
+  //    switch (A) {
+  //    case 15:
+  //      return 13.7;
+  //    default:
+  //      break;
+  //    }
+  //  }
+  //  }
+  //  printf("hw for A Z doesn't exist! return empirical\n");
+  return 45 * pow(A, -1 / 3.) - 25 * pow(A, -2 / 3.);
 }

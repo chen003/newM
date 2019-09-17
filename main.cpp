@@ -279,11 +279,6 @@ void makeBasis(int A, int Z, int n_lam, int *dim, struct config *cfg) {
   int n_neutron;
   n_proton = Z - 2;
   n_neutron = A - Z - 2 - n_lam;
-
-  int l_or_h = 1;
-  if (A <= 10) {
-    l_or_h = 0;
-  }
   // makeTBME(fp, fpH, l_or_h); //  这一步后才能使用 mfromA 函数
 
   int M2 =
@@ -954,6 +949,7 @@ int main() {
            "6 for creating .plt file for energy level plot, "
            "7 for BE2 between the first 5 states for a given shell, "
            "0 exit\n");
+
     int numberoflevels;
     int choose = 7;
     scanf("%d", &choose);
@@ -971,6 +967,56 @@ int main() {
       //        printf("%d %d\n", cfgl[i].p, cfgl[i].n);
       //      }
 
+      double be2mat[dim_cfgl][dim_cfgl];
+      for (int i = 0; i < dim_cfgl; i++) {
+        for (int j = i; j < dim_cfgl; j++) {
+          if (j == i) {
+            be2mat[i][i] = be2diagfromPermut(typenn, cfgl[i].n) +
+                           be2diagfromPermut(typepp, cfgl[i].p);
+            //            printf("be2nondiag i = %d, be2 for %d %d:%f\n", i,
+            //            cfgl[i].n,
+            //                   cfgl[i].p, be2mat[i][j]);
+          } else if (difcount(cfgl[i].lam, cfgl[j].lam) == 0) {
+
+            if (difcount(cfgl[i].p, cfgl[j].p) == 0 &&
+                difcount(cfgl[i].n, cfgl[j].n) == 2) {
+              be2mat[i][j] = be2mat[j][i] =
+                  be2nondiagfromPermut(typenn, cfgl[i].n, cfgl[j].n);
+              //              printf("be2nondiag i = %d, j = %d, be2 for %d %d:
+              //              %f\n", i, j,
+              //                     cfgl[i].n, cfgl[j].n, be2mat[i][j]);
+
+            } else if (difcount(cfgl[i].p, cfgl[j].p) == 2 &&
+                       difcount(cfgl[i].n, cfgl[j].n) == 0) {
+              be2mat[i][j] = be2mat[j][i] =
+                  be2nondiagfromPermut(typepp, cfgl[i].p, cfgl[j].p);
+            } // should only have in total (p & n) one difference.
+            else {
+              be2mat[i][j] = be2mat[j][i] = 0;
+            }
+          } else {
+            be2mat[i][j] = be2mat[j][i] = 0;
+          }
+        }
+      }
+
+      for (int i = 0; i < dim_cfgl; i++) {
+        for (int j = 0; j < dim_cfgl; j++) {
+          printf("%.2f\t", be2mat[i][j]);
+        }
+        printf("\n");
+      }
+
+      for (int i = 0; i < dim_cfgl; i++) {
+        printf("p ");
+        bin(cfgl[i].p);
+        printf("\tn ");
+        bin(cfgl[i].n);
+        printf("\tlam ");
+        bin(cfgl[i].lam);
+        printf("\n");
+      }
+
       int n_ini, n_fin;
       int next = 0;
       while (next == 0) {
@@ -980,48 +1026,6 @@ int main() {
           scanf("%d %d", &n_ini, &n_fin);
         } while (!(n_fin < n_ini && n_fin >= 0));
 
-        double be2mat[dim_cfgl][dim_cfgl];
-        for (int i = 0; i < dim_cfgl; i++) {
-          for (int j = i; j < dim_cfgl; j++) {
-            if (j == i) {
-              be2mat[i][i] = be2diagfromPermut(typenn, cfgl[i].n) +
-                             be2diagfromPermut(typepp, cfgl[i].p);
-            } else if (difcount(cfgl[i].lam, cfgl[j].lam) == 0) {
-
-              if (difcount(cfgl[i].p, cfgl[j].p) == 0 &&
-                  difcount(cfgl[i].n, cfgl[j].n) == 2) {
-                be2mat[i][j] = be2mat[j][i] =
-                    be2nondiagfromPermut(typenn, cfgl[i].n, cfgl[j].n);
-              } else if (difcount(cfgl[i].p, cfgl[j].p) == 2 &&
-                         difcount(cfgl[i].n, cfgl[j].n) == 0) {
-                be2mat[i][j] = be2mat[j][i] =
-                    be2nondiagfromPermut(typepp, cfgl[i].p, cfgl[j].p);
-              } // should only have in total (p & n) one difference.
-              else {
-                be2mat[i][j] = be2mat[j][i] = 0;
-              }
-            } else {
-              be2mat[i][j] = be2mat[j][i] = 0;
-            }
-          }
-        }
-        for (int i = 0; i < dim_cfgl; i++) {
-          for (int j = 0; j < dim_cfgl; j++) {
-            printf("%.2f\t", be2mat[i][j]);
-          }
-          printf("\n");
-        }
-
-        for (int i = 0; i < dim_cfgl; i++) {
-          printf("p ");
-          bin(cfgl[i].p);
-          printf(" n ");
-          bin(cfgl[i].n);
-          printf(" lam ");
-          bin(cfgl[i].lam);
-          printf("\n");
-        }
-
         double be2 = 0;
         for (int i = 0; i < dim_cfgl; i++) {
           for (int j = 0; j < dim_cfgl; j++) {
@@ -1030,17 +1034,16 @@ int main() {
           }
         }
 
-        //        for (int i = 0; i < dim_cfgl; i++) {
-        //          printf("%f %f\n", energylevel[n_ini].v[i],
-        //          energylevel[n_fin].v[i]);
-        //        }
+        for (int i = 0; i < dim_cfgl; i++) {
+          printf("%f\t%f\n", energylevel[n_ini].v[i], energylevel[n_fin].v[i]);
+        }
 
         int M2 = 0;
         if (A % 2 == 1) {
           M2 = -1;
         }
 
-        be2 = be2 * 41.4 / hw(A, Z) /
+        be2 = be2 * 41.471 / hw(A, Z) /
               gsl_sf_coupling_3j((int)round(energylevel[n_ini].j), 4,
                                  (int)round(energylevel[n_fin].j), M2, 0, -M2);
         be2 = be2 * be2 / (energylevel[n_ini].j + 1); // 平方
