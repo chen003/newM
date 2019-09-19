@@ -36,7 +36,7 @@ double OTBMEm(int type, int A, int B, int a, int b, int **od1, double *od2,
   double
       tbme = 0,
       ele = 0,
-      inc;            // tbme是输出的值，ele是J-scheme出的矩阵元(加上对称关系得到的符号)，inc是连加号后的每一项（ele*两个CG系数）
+      inc; // tbme是输出的值，ele是J-scheme出的矩阵元(加上对称关系得到的符号)，inc是连加号后的每一项（ele*两个CG系数）
   int n1, n2, n3, n4; // J-scheme的前四个编号，1~3质子s1/2,p3/2,p1/2，4~6中子
   int i;
   Jmax = (j1rd + j2rd) / 2;
@@ -109,8 +109,9 @@ double HTBMEm(int A, int B, int a, int b, int **od1, double *od2,
   return OTBMEm(5, A, B, a, b, od1, od2, linesH);
 }
 
-void makeTBME(FILE *fp, FILE *fpH,
+void makeTBME(FILE *fp,
               int l_or_h) { // fp是核子核子相互作用, 跟 A 有关.
+  // legacy arguement FILE *fpH, now is calcualted inside sigint.c
 
   FILE *fpsp;
   FILE *fpspH; // j,m是两倍

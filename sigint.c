@@ -215,6 +215,9 @@ double Vtjtypej2j4(int Ttimes2, int J, int type, int j2times2, int j4times2,
 
 double Mtbme_T(int type, int k1m1, int k2m2, int k3m3, int k4m4,
                int l_or_h) { //算m-scheme矩阵元, l_or_h(0:light;1:heavy)
+  if (l_or_h == 2) {
+    return 0; // modified for radius or other two body operator calculations.
+  }
   double mtbme_T = 0;
   int j1times2, j2times2, j3times2, j4times2, l1, l2, l3, l4, m1times2,
       m2times2, m3times2, m4times2;

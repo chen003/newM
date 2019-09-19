@@ -43,8 +43,8 @@
 #define PATHsp "../newM/sp/p.sp"   // sp 壳文件
 #define PATHspH "../newM/sp/sH.sp" // Λ 的 s 壳文件
 
-#define efchargeP 1. // BE2 有效电荷
-#define efchargeN 0.
+#define efchargeP 1.5 // BE2 有效电荷
+#define efchargeN 0.5
 
 #endif /* sp__shell_h */
 
@@ -59,7 +59,7 @@ void itoa(int n, int base, char *buf);
 void bin(unsigned n);
 
 // 生成 TBME, 存入数组. fp 是  pn.int 文件
-void makeTBME(FILE *fp, FILE *fpH, int l_or_h);
+void makeTBME(FILE *fp, int l_or_h);
 
 // setup_TBME 里调用的, 用于读 int 文件
 int **getdatac(FILE *fp);
@@ -83,6 +83,10 @@ int numfromA(int A, int type);
 double efcharge(int type);                 // effective charge from type
 double be2diagfromPermut(int type, int w); // p 壳的 BE2
 double be2nondiagfromPermut(int type, int w, int v);
+
+// radius
+void CreateR2(double **h, int begin, int dim, struct config *cfg, int type,
+              int A, int Z);
 
 double hw(int A, int Z);
 

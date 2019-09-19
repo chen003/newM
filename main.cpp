@@ -199,6 +199,59 @@ double massdif(int type, double para) {
   return mass + para; //  para 用来整体平移, 相当于调 Σ 的单粒子能
 }
 
+void CreateR2(double **h, int begin, int dim, struct config *cfg, int type,
+              int A, int Z) {
+  int N = A - Z;
+  for (int i = 0; i < dim; i++) {
+    for (int j = i; j < dim; j++) {
+      double me = 0;                           //  单粒子能.
+      int difp = difcount(cfg[i].p, cfg[j].p); // 根据缩并情况讨论相互作用类型
+      int difn = difcount(cfg[i].n, cfg[j].n);
+      int difl = difcount(cfg[i].lam, cfg[j].lam);
+      //
+      if (type == typepp) {
+        me += (difl == 0
+                   ? 1 / 2 * (1 / Z - 1 / A) * 1 / A *
+                         TBOME(typepn, cfg[i].p, cfg[i].n, cfg[j].p, cfg[j].n)
+                   : 0);
+        me += ((difn + difl) == 0 ? (1 / Z - 1 / (2 * A)) * 1 / A *
+                                        TBOMEnn(typepp, cfg[i].p, cfg[j].p)
+                                  : 0);
+        me += ((difp + difl) == 0 ? (-1 / (2 * A)) * 1 / A *
+                                        TBOMEnn(typenn, cfg[i].n, cfg[j].n)
+                                  : 0);
+      } else if (type == typenn) {
+        me += (difl == 0
+                   ? 1 / 2 * (1 / (A - N) - 1 / A) * 1 / A *
+                         TBOME(typepn, cfg[i].p, cfg[i].n, cfg[j].p, cfg[j].n)
+                   : 0);
+        me += ((difp + difl) == 0 ? (1 / N - 1 / (2 * A)) * 1 / A *
+                                        TBOMEnn(typenn, cfg[i].n, cfg[j].n)
+                                  : 0);
+        me += ((difp + difl) == 0 ? (-1 / (2 * A)) * 1 / A *
+                                        TBOMEnn(typepp, cfg[i].n, cfg[j].n)
+                                  : 0);
+      } else if (type == 0) { // for matter radius
+        me += (difl == 0
+                   ? 1 / (2 * A * A) *
+                         TBOME(typepn, cfg[i].p, cfg[i].n, cfg[j].p, cfg[j].n)
+                   : 0);
+        me += ((difp + difl) == 0
+                   ? 1 / (2 * A * A) * TBOMEnn(typenn, cfg[i].n, cfg[j].n)
+                   : 0);
+        me += ((difp + difl) == 0
+                   ? 1 / (2 * A * A) * TBOMEnn(typepp, cfg[i].n, cfg[j].n)
+                   : 0);
+      } else {
+        printf("Invalid type in CreateR2. \n");
+        exit(0);
+      }
+
+      h[i + begin][j + begin] = h[j + begin][i + begin] = me;
+    }
+  }
+}
+
 void CreateHamiltonianDiag(double **h, int begin, int dim, struct config *cfg,
                            int typeNL, int typePL) {
   for (int i = 0; i < dim; i++) {
@@ -357,7 +410,7 @@ int shell(int A, int Z, int n_lam, struct level *level, int interaction) {
   if (A <= 10) {
     l_or_h = 0;
   }
-  makeTBME(fp, fpH, l_or_h); //  这一步后才能使用 mfromA 函数
+  makeTBME(fp, l_or_h); //  这一步后才能使用 mfromA 函数
 
   int M2 =
       ((n_proton + n_neutron + n_lam) % 2 == 0 ? 0 : -1); //  最低角动量 z 分量
@@ -947,13 +1000,69 @@ int main() {
            "4 for all p-shell Λ binding energies, "
            "5 for all p-shell ΛΛ binding energies, "
            "6 for creating .plt file for energy level plot, "
-           "7 for BE2 between the first 5 states for a given shell, "
+           "7 for BE2 between the first 5 states for a given nuclei, "
+           "8 for R^2 for given nuclei"
            "0 exit\n");
 
     int numberoflevels;
     int choose = 7;
     scanf("%d", &choose);
     switch (choose) {
+    case 8: {
+      printf("input &A &Z &n_lam:\n");
+      scanf("%d %d %d", &A, &Z, &n_lam);
+      printf("input interaction type:(0 for gogny, 1 for fit)\n");
+      scanf("%d", &interaction);
+
+      shell(A, Z, n_lam, energylevel, interaction);
+      makeBasis(A, Z, n_lam, &dim_cfgl, cfgl);
+
+      FILE *fp;
+      if (!(fp = fopen("../newM/radius/r2.int", "rt"))) {
+        fprintf(stderr, "Can't find file 1 for A%dZ%d!\n", A, Z);
+        return 0;
+      }
+      set_singleE(fp); //  singleE 需要读取文件 pn.int
+      makeTBME(fp, 2);
+
+      double rp2mat[dim_cfgl][dim_cfgl];
+      double r2mat[dim_cfgl][dim_cfgl];
+      for (int i = 0; i < dim_cfgl; i++) {
+        for (int j = i; j < dim_cfgl; j++) {
+          rp2mat[i][j] = rp2mat[j][i] = 0;
+          r2mat[i][j] = r2mat[j][i] = 0;
+        }
+      }
+
+      // 计算哈密顿矩阵, 对于两个核子直接调用 TBME 即可
+      //  利用对称性只需要处理上三角.
+      CreateR2(rp2mat, 0, dim_cfgl, cfgl, typepp, A, Z);
+      CreateR2(r2mat, 0, dim_cfgl, cfgl, 0, A, Z);
+
+      double rp2 = 0;
+      double r2 = 0;
+      for (int i = 0; i < dim_cfgl; i++) {
+        for (int j = 0; j < dim_cfgl; j++) {
+          rp2 += energylevel[0].v[i] * rp2mat[i][j] * energylevel[0].v[j];
+          r2 += energylevel[0].v[i] * r2mat[i][j] * energylevel[0].v[j];
+        }
+      }
+
+      double r2core = 0;
+      double rp2core = 0;
+
+      rp2 += ((2 * Z + A - 8) / Z - 2 * (Z - 2) / A) * 2.5 / A;
+      rp2 = rp2 * 41.471 / hw(A, Z);
+      rp2 += 4 * (1 / Z - 2 / A) / A * r2core + (A + 4) / Z / A * rp2core;
+
+      r2 += (2 * (Z - 2) / A) * 2.5 / A;
+      r2 = r2 * 41.471 / hw(A, Z);
+      r2 += 2 * (1 + 4 / A) / A * r2core;
+
+      printf("Pointlike proton and nucleon matter RMS: %f, %f\n", rp2, r2);
+
+      break;
+    }
     case 7: {
       printf("input &A &Z &n_lam:\n");
       scanf("%d %d %d", &A, &Z, &n_lam);
@@ -962,6 +1071,8 @@ int main() {
 
       shell(A, Z, n_lam, energylevel, interaction);
       makeBasis(A, Z, n_lam, &dim_cfgl, cfgl);
+      // For simplicity ignore Σ components, otherwise have to
+      // sum over Σ+-0.
 
       //      for (int i = 0; i < dim_cfgl; i++) {
       //        printf("%d %d\n", cfgl[i].p, cfgl[i].n);
@@ -1000,22 +1111,22 @@ int main() {
         }
       }
 
-      for (int i = 0; i < dim_cfgl; i++) {
-        for (int j = 0; j < dim_cfgl; j++) {
-          printf("%.2f\t", be2mat[i][j]);
-        }
-        printf("\n");
-      }
+      //      for (int i = 0; i < dim_cfgl; i++) {
+      //        for (int j = 0; j < dim_cfgl; j++) {
+      //          printf("%.2f\t", be2mat[i][j]);
+      //        }
+      //        printf("\n");
+      //      }
 
-      for (int i = 0; i < dim_cfgl; i++) {
-        printf("p ");
-        bin(cfgl[i].p);
-        printf("\tn ");
-        bin(cfgl[i].n);
-        printf("\tlam ");
-        bin(cfgl[i].lam);
-        printf("\n");
-      }
+      //      for (int i = 0; i < dim_cfgl; i++) {
+      //        printf("p ");
+      //        bin(cfgl[i].p);
+      //        printf("\tn ");
+      //        bin(cfgl[i].n);
+      //        printf("\tlam ");
+      //        bin(cfgl[i].lam);
+      //        printf("\n");
+      //      }
 
       int n_ini, n_fin;
       int next = 0;
@@ -1034,9 +1145,10 @@ int main() {
           }
         }
 
-        for (int i = 0; i < dim_cfgl; i++) {
-          printf("%f\t%f\n", energylevel[n_ini].v[i], energylevel[n_fin].v[i]);
-        }
+        //        for (int i = 0; i < dim_cfgl; i++) {
+        //          printf("%f\t%f\n", energylevel[n_ini].v[i],
+        //          energylevel[n_fin].v[i]);
+        //        }
 
         int M2 = 0;
         if (A % 2 == 1) {
