@@ -11,3 +11,8 @@ j1 j2 j3 j4 J T
 convert J-scheme TBME to M-scheme
 
 1-6 means proton, 7-12 means neutron, 13 Lambda, 14-16 Sigma
+
+from 1-6:
+1/2,-1/2,3/2,1/2,-1/2,-3/2
+
+Positions store as binary form in an integer.
