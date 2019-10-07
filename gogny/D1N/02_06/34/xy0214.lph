@@ -1,0 +1,5 @@
+! ---------- shell input for xy0214.lpe
+p                  input *.sp file name
+ppn                proton-neutron *.sp file name
+test               interaction file name
+ 4         number of pn orbitals

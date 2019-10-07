@@ -1,0 +1,53 @@
+       (mvecr(i)%fn(1:gwords()),i=1,dim)
+                   192
+                                part do_
+      0      0      2      0      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0
+           Jz,Tz,Jmax,Tmax,dim,nJT,dimJp
+           0           0           0           0           1           1
+           0
+       (mvecr(i)%fn(1:gwords()),i=1,dim)
+                   640                  1088
+       (mvecr(i)%fn(1:gwords()),i=1,dim)
+                  1536                  2304
+                                part do_
+      0      0      0      2      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0
+           Jz,Tz,Jmax,Tmax,dim,nJT,dimJp
+           0           0           4           0           2           1
+           1
+                          tN,no_cI,no_cN
+           2           0           2
+       (mvecr(i)%fn(1:gwords()),i=1,dim)
+                  1152                  2112
+                                part do_
+      0      0      1      1      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0
+           Jz,Tz,Jmax,Tmax,dim,nJT,dimJp
+           2           0           4           0           2           1
+           1
+                          tN,no_cI,no_cN
+           2           0           2
+       (mvecr(i)%fn(1:gwords()),i=1,dim)
+                  2560
+       (mvecr(i)%fn(1:gwords()),i=1,dim)
+                  2176
+                                part do_
+      0      0      1      1      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0
+           Jz,Tz,Jmax,Tmax,dim,nJT,dimJp
+           4           0           4           0           1           1
+           0
+       (mvecr(i)%fn(1:gwords()),i=1,dim)
+                  3072
+                                part do_
+      0      0      0      2      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0      0
+      0      0      0      0      0      0      0      0      0      0
+           Jz,Tz,Jmax,Tmax,dim,nJT,dimJp
+           4           0           4           0           1           1
+           0

@@ -1,0 +1,14 @@
+
+------------------------------------------------------------
+a =   6 z =  2
+
+Interaction file information from he06y.mit    
+Interaction   spe-norm    tbme-norm  spe
+test           1.00000      1.00000  8.3541  0.3184
+
+  N  Njp     E(MeV)  Ex(MeV) J  p   lowest Ex      name
+   1   1     -4.102   0.000  0  +   0.000     xy0200.lpe          
+   2   1     -1.829   2.273  2  +   2.273     xy0204.lpe          
+   3   2      5.783   9.885  2  +             xy0204.lpe          
+   4   1      9.489  13.591  1  +  13.591     xy0202.lpe          
+   5   2     16.405  20.506  0  +             xy0200.lpe          

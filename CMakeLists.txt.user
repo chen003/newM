@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.10.0, 2019-09-17T18:50:54. -->
+<!-- Written by QtCreator 4.10.0, 2019-09-24T20:51:46. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -760,6 +760,7 @@
     <value type="bool" key="RunConfiguration.UseMultiProcess">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseTerminal">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory"></value>
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Users/xingyanchen/Desktop/research/hypernuclei/newM/build-newM-Desktop-Release</value>
    </valuemap>

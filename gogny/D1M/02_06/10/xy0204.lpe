@@ -1,0 +1,115 @@
+! ---------- shell input for xy0204.lpe
+p                  input *.sp file name
+ppn                proton-neutron *.sp file name
+test               interaction file name
+ 4         number of pn orbitals
+
+  NuShellX V4.0 R2.003
+ 
+  W.D.M. Rae, Garsington, Oxford 2008
+ 
+  Uses NuShell code by W.D.M. Rae, Garsington, Oxford, UK, 2006/7
+ 
+   he060s
+ 
+  NuShellX is a nuclear shellmodel program
+  written in Fortran95 for Windows/Linux. 
+  It is based on NuShell by W D M Rae 2007
+ 
+  2*J,   2*T           4           2
+ 
+  Lowest Energy Levels
+ 
+ 
+  Type a = n  Type b = ?
+  A partitions
+      -1   0   0   2   0
+      -2   0   0   1   1
+      -3   0   0   0   2
+  B partitions
+      -1   0   0   0   0
+ 
+ State            1  -1.329205      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   0.0187   1.9813
+ 
+ Average B type nucleons  
+   0.0000   0.0000   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            4           0   100.0000    
+ B partition, amplitude            1   100.0000    
+ A partitions, amplitudes
+(  1,   0.00)(  2,   1.87)(  3,  98.13)
+ 
+ State            2   4.513604      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   0.9813   1.0187
+ 
+ Average B type nucleons  
+   0.0000   0.0000   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            4           0   100.0000    
+ B partition, amplitude            1   100.0000    
+ A partitions, amplitudes
+(  1,   0.00)(  2,  98.13)(  3,   1.87)
+    -1.329+     4.514+
+
+! ---------- begin input for he060.modelx
+M
+ppn       
+  4
+  2
+0p1/2
+0p3/2
+0p1/2
+0p3/2
+y
+y
+   0 999   0 999   0 999
+y
+  1  0  2
+y
+  2  0  4
+y
+  3  0  2
+y
+  4  0  4
+n
+n
+X
+! ---------- end input for he060.modelx
+
+! ---------- begin input for he060.levelx
+L
+he060
+s
+ppn       
+   0
+   2
+y
+i 
+he060
+n
+n
+n
+  0 16  2
+n
+  0  0  2
+n
+  0 16  2
+0
+0
+ 1
+  10
+n
+s
+y
+X
+! ---------- end input for he060.levelx
+

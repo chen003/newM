@@ -1,0 +1,201 @@
+! ---------- shell input for xy1406.lpe
+p                  input *.sp file name
+ppn                proton-neutron *.sp file name
+test               interaction file name
+ 4         number of pn orbitals
+
+  NuShellX V4.0 R2.003
+ 
+  W.D.M. Rae, Garsington, Oxford 2008
+ 
+  Uses NuShell code by W.D.M. Rae, Garsington, Oxford, UK, 2006/7
+ 
+   li080s
+ 
+  NuShellX is a nuclear shellmodel program
+  written in Fortran95 for Windows/Linux. 
+  It is based on NuShell by W D M Rae 2007
+ 
+  2*J,   2*T           6           2
+ 
+  Lowest Energy Levels
+ 
+ 
+  Type a = n  Type b = p
+  A partitions
+      -1   0   0   2   1
+      -2   0   0   1   2
+      -3   0   0   0   3
+  B partitions
+      -1   1   0   0   0
+      -2   0   1   0   0
+ 
+ State            1  -21.16451      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   0.2109   2.7891
+ 
+ Average B type nucleons  
+   0.0175   0.9825   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            5           1   1.751384    
+ B partition, amplitude            1   1.751384    
+ A partitions, amplitudes
+(  1,   0.00)(  2,   1.75)(  3,   0.00)
+ 
+ 2*JA, 2*JB, amplitude            3           3   87.42936    
+ B partition, amplitude            2   87.42936    
+ A partitions, amplitudes
+(  1,   4.23)(  2,   0.06)(  3,  83.14)
+ 
+ 2*JA, 2*JB, amplitude            5           3   10.81925    
+ B partition, amplitude            2   10.81925    
+ A partitions, amplitudes
+(  1,   0.00)(  2,  10.82)(  3,   0.00)
+ 
+ State            2  -12.71388      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   0.9085   2.0915
+ 
+ Average B type nucleons  
+   0.0004   0.9996   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            3           3   20.08940    
+ B partition, amplitude            2   20.08940    
+ A partitions, amplitudes
+(  1,   4.46)(  2,   2.01)(  3,  13.61)
+ 
+ 2*JA, 2*JB, amplitude            5           3   79.87518    
+ B partition, amplitude            2   79.87518    
+ A partitions, amplitudes
+(  1,   0.00)(  2,  79.88)(  3,   0.00)
+ 
+ State            3  -9.040068      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   1.0571   1.9429
+ 
+ Average B type nucleons  
+   0.0000   1.0000   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            3           3   96.33368    
+ B partition, amplitude            2   96.33368    
+ A partitions, amplitudes
+(  1,   5.87)(  2,  90.30)(  3,   0.16)
+ 
+ 2*JA, 2*JB, amplitude            5           3   3.666229    
+ B partition, amplitude            2   3.666229    
+ A partitions, amplitudes
+(  1,   0.00)(  2,   3.67)(  3,   0.00)
+ 
+ State            4  -5.945914      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   1.0477   1.9523
+ 
+ Average B type nucleons  
+   0.8818   0.1182   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            5           1   88.18282    
+ B partition, amplitude            1   88.18282    
+ A partitions, amplitudes
+(  1,   0.00)(  2,  88.18)(  3,   0.00)
+ 
+ 2*JA, 2*JB, amplitude            3           3   10.09545    
+ B partition, amplitude            2   10.09545    
+ A partitions, amplitudes
+(  1,   7.05)(  2,   0.75)(  3,   2.29)
+ 
+ 2*JA, 2*JB, amplitude            5           3   1.721734    
+ B partition, amplitude            2   1.721734    
+ A partitions, amplitudes
+(  1,   0.00)(  2,   1.72)(  3,   0.00)
+ 
+ State            5  -2.236878      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   1.7758   1.2242
+ 
+ Average B type nucleons  
+   0.1003   0.8997   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            5           1   10.03027    
+ B partition, amplitude            1   10.03027    
+ A partitions, amplitudes
+(  1,   0.00)(  2,  10.03)(  3,   0.00)
+ 
+ 2*JA, 2*JB, amplitude            3           3   86.05212    
+ B partition, amplitude            2   86.05212    
+ A partitions, amplitudes
+(  1,  78.38)(  2,   6.87)(  3,   0.80)
+ 
+ 2*JA, 2*JB, amplitude            5           3   3.917611    
+ B partition, amplitude            2   3.917611    
+ A partitions, amplitudes
+(  1,   0.00)(  2,   3.92)(  3,   0.00)
+   -21.165+   -12.714+    -9.040+    -5.946+    -2.237+
+
+! ---------- begin input for li080.modelx
+M
+ppn       
+  4
+  2
+0p1/2
+0p3/2
+0p1/2
+0p3/2
+y
+y
+   0 999   0 999   0 999
+y
+  1  0  2
+y
+  2  0  4
+y
+  3  0  2
+y
+  4  0  4
+n
+n
+X
+! ---------- end input for li080.modelx
+
+! ---------- begin input for li080.levelx
+L
+li080
+s
+ppn       
+   1
+   3
+y
+i 
+li080
+n
+n
+n
+  0 16  2
+n
+  1  3  2
+n
+  1  5  2
+0
+0
+ 1
+  10
+n
+s
+y
+X
+! ---------- end input for li080.levelx
+

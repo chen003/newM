@@ -1,0 +1,3 @@
+ CPU Time:    8.780000      Parallel Fraction (%):    98.99773     
+  # of Threads:           80
+ Elapsed Time:   0.1953125    

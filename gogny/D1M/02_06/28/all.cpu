@@ -1,0 +1,12 @@
+linux     system
+/data1/daibo/gogny/nushell/aaa/bin/share/NuShellX/nushellx/sps/       
+using nulnz                                                           
+
+t = total elapsed time
+ra = average speed up
+t2 = elapsed time for last iter
+r2 = speed up for last iter
+ic = no_levels+iter_add
+
+2j ibas        dim       ---- t(s,m,h) ---      ra      t2(s) r2  max_dev(ic) level_limit ic iter
+

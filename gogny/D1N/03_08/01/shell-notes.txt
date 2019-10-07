@@ -1,0 +1,8 @@
+The nushellx default (imode=0) is that "a"=n or p which ever
+has the largest number of valence neutrons nn or protons np.
+Bill Rae says that Nushellx runs faster this way.
+But with imode=0 one cannot do charge exchange when
+np.gte.nn for one of the nuclei.
+The Shell default (imode=1) fores "a"=n always
+and charge exchange always works. To change the value make a
+file called imode.dat and put 0 or 1 in the first line.

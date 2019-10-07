@@ -1,0 +1,106 @@
+  NuShellX V4.0 R2.003
+ 
+  W.D.M. Rae, Garsington, Oxford 2008
+ 
+  Uses NuShell code by W.D.M. Rae, Garsington, Oxford, UK, 2006/7
+ 
+   li080s
+ 
+  NuShellX is a nuclear shellmodel program
+  written in Fortran95 for Windows/Linux. 
+  It is based on NuShell by W D M Rae 2007
+ 
+  2*J,   2*T           0           2
+ 
+  Lowest Energy Levels
+ 
+ 
+  Type a = n  Type b = p
+  A partitions
+      -1   0   0   2   1
+      -2   0   0   1   2
+      -3   0   0   0   3
+  B partitions
+      -1   1   0   0   0
+      -2   0   1   0   0
+ 
+ State            1  -12.84041      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   1.2163   1.7837
+ 
+ Average B type nucleons  
+   0.2163   0.7837   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            1           1   21.63072    
+ B partition, amplitude            1   21.63072    
+ A partitions, amplitudes
+(  1,   0.00)(  2,  21.63)(  3,   0.00)
+ 
+ 2*JA, 2*JB, amplitude            3           3   78.36929    
+ B partition, amplitude            2   78.36929    
+ A partitions, amplitudes
+(  1,  21.63)(  2,  56.74)(  3,   0.00)
+ 
+ State            2  -8.121267      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   0.0601   2.9399
+ 
+ Average B type nucleons  
+   0.0200   0.9800   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            1           1   2.004596    
+ B partition, amplitude            1   2.004596    
+ A partitions, amplitudes
+(  1,   0.00)(  2,   2.00)(  3,   0.00)
+ 
+ 2*JA, 2*JB, amplitude            3           3   97.99539    
+ B partition, amplitude            2   97.99539    
+ A partitions, amplitudes
+(  1,   2.00)(  2,   0.00)(  3,  95.99)
+ 
+ State            3   1.177991      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   1.2837   1.7163
+ 
+ Average B type nucleons  
+   0.2837   0.7163   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            1           1   28.36927    
+ B partition, amplitude            1   28.36927    
+ A partitions, amplitudes
+(  1,   0.00)(  2,  28.37)(  3,   0.00)
+ 
+ 2*JA, 2*JB, amplitude            3           3   71.63072    
+ B partition, amplitude            2   71.63072    
+ A partitions, amplitudes
+(  1,  28.37)(  2,  43.26)(  3,   0.00)
+ 
+ State            4   12.28352      +
+ 
+ Average A type nucleons  
+   0.0000   0.0000   1.4399   1.5601
+ 
+ Average B type nucleons  
+   0.4800   0.5200   0.0000   0.0000
+  Positive and Negative Parity 
+  +ve   100.00 % -ve     0.00%
+ 
+ 2*JA, 2*JB, amplitude            1           1   47.99543    
+ B partition, amplitude            1   47.99543    
+ A partitions, amplitudes
+(  1,   0.00)(  2,  48.00)(  3,   0.00)
+ 
+ 2*JA, 2*JB, amplitude            3           3   52.00458    
+ B partition, amplitude            2   52.00458    
+ A partitions, amplitudes
+(  1,  48.00)(  2,   0.00)(  3,   4.01)
+   -12.840+    -8.121+     1.178+    12.284+

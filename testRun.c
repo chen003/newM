@@ -26,11 +26,6 @@ int main() {
     printf("Can't find file 1!\n");
     exit(1);
   }
-  FILE *fpH;
-  if (!(fpH = fopen(PATHh, "rt"))) {
-    printf("Can't find file 2!\n");
-    exit(1);
-  }
 
   //**************单独使用 jfromA 等. ***********
   //  FILE *fpsp;
@@ -46,7 +41,8 @@ int main() {
   //  setMschemeID2JschemeID(fpsp, fpspH);
   //*******************************************
 
-  makeTBME(fp, fpH, 0); // 这一步后才能使用 mfromA 函数
+  makeTBME(fp, 0); // 这一步后才能使用 mfromA 函数
+  writeTBME();
   //**************查看TBME*********************
   //    printf("input:\n");
   //    int t,a,b,c,d;

@@ -1,0 +1,10 @@
+ CO-INDEX ARRAY (BEFORE SORTING)
+          Index   Time          Heuristic Value
+           1  4.9999952E-03           0
+           2  2.9999018E-03           0
+           3  3.0000210E-03           0
+ CO-INDEX ARRAY (AFTER SORTING)
+          Index   Time          Heuristic Value
+           2  2.9999018E-03           0
+           3  3.0000210E-03           0
+           1  4.9999952E-03           0

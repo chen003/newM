@@ -199,55 +199,55 @@ double massdif(int type, double para) {
   return mass + para; //  para 用来整体平移, 相当于调 Σ 的单粒子能
 }
 
-void CreateR2(double **h, int begin, int dim, struct config *cfg, int type,
-              int A, int Z) {
-  int N = A - Z;
+void CreateR2(double *h, int begin, int dim, struct config *cfg, int type,
+              int a, int z) {
+  double A = a;
+  double Z = z;
+  double N = A - Z;
+
   for (int i = 0; i < dim; i++) {
     for (int j = i; j < dim; j++) {
-      double me = 0;                           //  单粒子能.
+      double me = 0;
       int difp = difcount(cfg[i].p, cfg[j].p); // 根据缩并情况讨论相互作用类型
       int difn = difcount(cfg[i].n, cfg[j].n);
       int difl = difcount(cfg[i].lam, cfg[j].lam);
       //
       if (type == typepp) {
-        me += (difl == 0
-                   ? 1 / 2 * (1 / Z - 1 / A) * 1 / A *
-                         TBOME(typepn, cfg[i].p, cfg[i].n, cfg[j].p, cfg[j].n)
-                   : 0);
-        me += ((difn + difl) == 0 ? (1 / Z - 1 / (2 * A)) * 1 / A *
-                                        TBOMEnn(typepp, cfg[i].p, cfg[j].p)
-                                  : 0);
-        me += ((difp + difl) == 0 ? (-1 / (2 * A)) * 1 / A *
-                                        TBOMEnn(typenn, cfg[i].n, cfg[j].n)
-                                  : 0);
+
+        // 只计价质子
+        //        me += ((difn + difl) == 0 ? 1.0 : 0) * 1.0 / (2.0 * Z * Z) *
+        //              TBOMEnn(typepp, cfg[i].p, cfg[j].p);
+
+        // 我的方法
+        me += (difl == 0 ? 1 : 0) * 1.0 / 2.0 * (1.0 / Z - 1.0 / A) * 1.0 / A *
+              TBOME(typepn, cfg[i].p, cfg[i].n, cfg[j].p, cfg[j].n);
+        me += ((difn + difl) == 0 ? 1.0 : 0) * (1.0 / Z - 1.0 / (2.0 * A)) *
+              1.0 / A * TBOMEnn(typepp, cfg[i].p, cfg[j].p);
+        me += ((difp + difl) == 0 ? 1.0 : 0) * (-1.0 / (2.0 * A)) * 1.0 / A *
+              TBOMEnn(typenn, cfg[i].n, cfg[j].n);
       } else if (type == typenn) {
-        me += (difl == 0
-                   ? 1 / 2 * (1 / (A - N) - 1 / A) * 1 / A *
-                         TBOME(typepn, cfg[i].p, cfg[i].n, cfg[j].p, cfg[j].n)
-                   : 0);
-        me += ((difp + difl) == 0 ? (1 / N - 1 / (2 * A)) * 1 / A *
-                                        TBOMEnn(typenn, cfg[i].n, cfg[j].n)
-                                  : 0);
-        me += ((difp + difl) == 0 ? (-1 / (2 * A)) * 1 / A *
-                                        TBOMEnn(typepp, cfg[i].n, cfg[j].n)
-                                  : 0);
+        me += (difl == 0 ? 1.0 : 0) * 1.0 / 2 * (1.0 / (A - N) - 1.0 / A) *
+              1.0 / A * TBOME(typepn, cfg[i].p, cfg[i].n, cfg[j].p, cfg[j].n);
+        me += ((difp + difl) == 0 ? 1.0 : 0) * (1.0 / N - 1.0 / (2.0 * A)) *
+              1.0 / A * TBOMEnn(typenn, cfg[i].n, cfg[j].n);
+        me += (-1.0 / (2.0 * A)) * 1.0 / A *
+              TBOMEnn(typepp, cfg[i].p, cfg[j].p) *
+              ((difn + difl) == 0 ? 1.0 : 0);
       } else if (type == 0) { // for matter radius
-        me += (difl == 0
-                   ? 1 / (2 * A * A) *
-                         TBOME(typepn, cfg[i].p, cfg[i].n, cfg[j].p, cfg[j].n)
-                   : 0);
-        me += ((difp + difl) == 0
-                   ? 1 / (2 * A * A) * TBOMEnn(typenn, cfg[i].n, cfg[j].n)
-                   : 0);
-        me += ((difp + difl) == 0
-                   ? 1 / (2 * A * A) * TBOMEnn(typepp, cfg[i].n, cfg[j].n)
-                   : 0);
+        me += 1.0 / (2 * A * A) *
+              TBOME(typepn, cfg[i].p, cfg[i].n, cfg[j].p, cfg[j].n) *
+              (difl == 0 ? 1.0 : 0);
+        me += ((difp + difl) == 0 ? 1.0 : 0) * 1.0 / (2 * A * A) *
+              TBOMEnn(typenn, cfg[i].n, cfg[j].n);
+        me += ((difn + difl) == 0 ? 1.0 : 0) * 1.0 / (2 * A * A) *
+              TBOMEnn(typepp, cfg[i].p, cfg[j].p);
       } else {
         printf("Invalid type in CreateR2. \n");
         exit(0);
       }
 
-      h[i + begin][j + begin] = h[j + begin][i + begin] = me;
+      *((h + (i + begin) * dim) + (j + begin)) =
+          *((h + (j + begin) * dim) + (i + begin)) = me;
     }
   }
 }
@@ -444,6 +444,9 @@ int shell(int A, int Z, int n_lam, struct level *level, int interaction) {
   const int dim = diml + dimsig1 + dimsig2 + dimsig3;
   //   const int dimJplus = dimlJplus + dimsig1Jplus + dimsig2Jplus +
   //   dimsig3Jplus;
+
+  printf("Model space dimension: %d\n", dim);
+  printf("No Sigma model space dimension: %d\n", diml);
 
   double **h = (double **)malloc(sizeof(double *) * dim);
   {
@@ -1001,7 +1004,7 @@ int main() {
            "5 for all p-shell ΛΛ binding energies, "
            "6 for creating .plt file for energy level plot, "
            "7 for BE2 between the first 5 states for a given nuclei, "
-           "8 for R^2 for given nuclei"
+           "8 for R^2 for given nuclei, "
            "0 exit\n");
 
     int numberoflevels;
@@ -1018,6 +1021,7 @@ int main() {
       makeBasis(A, Z, n_lam, &dim_cfgl, cfgl);
 
       FILE *fp;
+      // "../newM/radius/r2.int"; "../newM/int/p-shellpn.int"
       if (!(fp = fopen("../newM/radius/r2.int", "rt"))) {
         fprintf(stderr, "Can't find file 1 for A%dZ%d!\n", A, Z);
         return 0;
@@ -1034,10 +1038,11 @@ int main() {
         }
       }
 
-      // 计算哈密顿矩阵, 对于两个核子直接调用 TBME 即可
-      //  利用对称性只需要处理上三角.
-      CreateR2(rp2mat, 0, dim_cfgl, cfgl, typepp, A, Z);
-      CreateR2(r2mat, 0, dim_cfgl, cfgl, 0, A, Z);
+      double a = A - n_lam;
+      double z = Z;
+
+      CreateR2((double *)rp2mat, 0, dim_cfgl, cfgl, typepp, a, z);
+      CreateR2((double *)r2mat, 0, dim_cfgl, cfgl, 0, a, z);
 
       double rp2 = 0;
       double r2 = 0;
@@ -1048,18 +1053,37 @@ int main() {
         }
       }
 
-      double r2core = 0;
-      double rp2core = 0;
+      double r2core = 1.676 * 1.676;
+      double rp2core = 1.676 * 1.676;
 
-      rp2 += ((2 * Z + A - 8) / Z - 2 * (Z - 2) / A) * 2.5 / A;
-      rp2 = rp2 * 41.471 / hw(A, Z);
-      rp2 += 4 * (1 / Z - 2 / A) / A * r2core + (A + 4) / Z / A * rp2core;
+      printf("valence contribution for proton and nucleon::\n%f, %f\n", rp2,
+             r2);
 
-      r2 += (2 * (Z - 2) / A) * 2.5 / A;
+      //我的方法
+      rp2 += (2.0 / a + 2.0 / z - 16.0 / (z * a) + 8.0 / (a * a)) * 2.5;
+      rp2 = rp2 * 41.471 / hw(a, z);
+      rp2 += 2.0 / z * rp2core;
+
+      // 只计价质子
+      //      rp2 += ((z - 2.0) / z) * 2.5 / z;
+      //      rp2 = rp2 * 41.471 / hw(a, z);
+      //      rp2 += (4.0 / z) * rp2core;
+
+      printf("rp2: %f\n", rp2);
+
+      r2 += (4.0 * (a - 4.0) / a) * 2.5 / a;
       r2 = r2 * 41.471 / hw(A, Z);
-      r2 += 2 * (1 + 4 / A) / A * r2core;
+      r2 += (8.0 / a) * r2core;
 
-      printf("Pointlike proton and nucleon matter RMS: %f, %f\n", rp2, r2);
+      double rp2_em = sqrt((2 * rp2core + (z - 2) * 41.471 / hw(a, z)) / z);
+      double r2_em = sqrt((4 * r2core + (a - 4) * 41.471 / hw(a, z)) / a);
+      printf("Pointlike proton and nucleon matter RMS:\n%f, %f\n", sqrt(rp2),
+             sqrt(r2));
+      printf("Empirical formula proton and nucleon:\n%f, %f\n", rp2_em, r2_em);
+
+      double rc = sqrt(rp2 + 0.875 * 0.875 - (a - z) / z * 0.116 + 0.033);
+
+      printf("Charge radii: \n%f\n", rc);
 
       break;
     }

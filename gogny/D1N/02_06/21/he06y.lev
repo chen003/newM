@@ -1,0 +1,10 @@
+fixed form input for levp
+test        interaction
+    -4.202  ground state energy
+   4        number of orbits
+   6   2    ia iz, followed by ex 2j parity
+     0.000   0 +
+     2.307   4 +
+     9.217   4 +
+    12.657   2 +
+    18.848   0 +
